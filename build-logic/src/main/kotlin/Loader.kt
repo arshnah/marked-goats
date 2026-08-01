@@ -86,6 +86,7 @@ sealed class Loader(val id: String) {
 		override val excludedResources = listOf(
 			"fabric.mod.json", "aw/*.accesswidener", ".cache"
 		)
+		open val modLoaderId: String = "javafml"
 
 		override fun generateManifest(ctx: Context): String {
 			val forgeDeps = mutableListOf<ForgeDependency>()
@@ -111,6 +112,7 @@ sealed class Loader(val id: String) {
 			val atFile = ctx.project.file("src/main/resources/aw/${ctx.stonecutter.current.version}.cfg")
 
 			val manifest = ForgeManifest(
+				modLoader = modLoaderId,
 				license = ctx.licenseName,
 				issueTrackerURL = ctx.issuesUrl,
 				mods = listOf(
@@ -147,6 +149,12 @@ sealed class Loader(val id: String) {
 	object Forge : ForgeLike("forge") {
 		override val modManifestPath = "META-INF/mods.toml"
 		override val excludedResources = super.excludedResources + "META-INF/neoforge.mods.toml"
+		// No @Mod-annotated entrypoint exists anywhere in this mixin-only mod.
+		// Legacy Forge's javafml loader hard-requires one ("has mods that were
+		// not found" at launch); lowcodefml is Forge's own loader type for
+		// exactly this case. NeoForge's javafml tolerates the same setup fine,
+		// confirmed via a real launch, so it keeps the default.
+		override val modLoaderId = "lowcodefml"
 		val mixinConfigAttribute = "MixinConfigs"
 		override val jarTask = "reobfJar"
 	}
