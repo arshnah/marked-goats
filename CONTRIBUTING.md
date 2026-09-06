@@ -162,3 +162,31 @@ issue, a race between overlapping launches) still compiled fine.
    generic display, which looks identical to "working" at a glance.
 4. Look at an actual goat in-game and confirm the title, icon, and
    instrument name.
+
+### 5. Gametest (optional)
+
+Only wired for `1.21.7` so far - not required for a new version, but if you
+want to extend it:
+
+1. Confirm `fabric-gametest-api-v1` actually has a build for the fabric-api
+   version you're pinning - check that version's own POM, not just the
+   umbrella jar's contents (it's compile-scope only, not embedded in the
+   jar-in-jar):
+
+   ```
+   https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/<deps.fabric-api>/fabric-api-<deps.fabric-api>.pom
+   ```
+
+   Look for a `fabric-gametest-api-v1` `<dependency>` entry and note its
+   version.
+2. Add `deps.gametest = true` to the version's toml block. This alone wires
+   the dependency, the `runGameTest`/`runClientGameTest` run configs, and
+   the `"fabric-gametest"` entrypoint (all gated in
+   `build.fabric-o.gradle.kts`/`Loader.kt` on this same property) - no
+   other file needs touching for a straightforward Fabric anchor.
+3. `GoatVariantGameTests.java` is gated behind `//? if gametest { ... }`
+   and only has real content when the property is set anywhere - so it's
+   safe to leave as-is; it'll pick up the new version automatically.
+4. Verify like anything else here: `./gradlew :X-fabric:runGameTest`, read
+   the actual log line ("All N required tests passed"), don't just trust a
+   zero exit code.

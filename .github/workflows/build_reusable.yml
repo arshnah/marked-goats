@@ -51,6 +51,9 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew buildAndCollect --no-daemon
 
+      - name: Run 1.21.7-fabric game tests
+        run: ./gradlew :1.21.7-fabric:runGameTest --no-daemon
+
       - name: Upload artifacts
         id: upload
         uses: actions/upload-artifact@v4

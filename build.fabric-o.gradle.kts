@@ -60,6 +60,13 @@ fabricApi {
 		outputDirectory = file("${rootDir}/versions/datagen/${sc.current.version.split("-")[0]}/src/main/generated")
 		client = true
 	}
+	if (project.hasProperty("deps.gametest")) {
+		configureTests {
+			// CI has no EULA prompt to accept - this is a local dev/test
+			// environment, not a public server.
+			eula.set(true)
+		}
+	}
 }
 
 repositories {
@@ -93,6 +100,9 @@ dependencies {
 	// include(libs.moulberry.mixinconstraints)
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
 	modLocalRuntime("com.terraformersmc:modmenu:${prop("deps.modmenu")}")
+	if (project.hasProperty("deps.gametest")) {
+		modImplementation(fabricApi.module("fabric-gametest-api-v1", prop("deps.fabric-api")))
+	}
 	if (project.hasProperty("deps.wthit")) {
 		val wthitApiVersion = if (project.hasProperty("deps.wthit-api")) prop("deps.wthit-api") else prop("deps.wthit")
 		modCompileOnly("mcp.mobius.waila:wthit-api:fabric-$wthitApiVersion")
@@ -106,12 +116,9 @@ dependencies {
 	}
 }
 
-// waila_plugins.json's schema depends on which WTHIT generation this version
-// targets: the legacy PluginLoader only understands "initializer", modern
-// ones prefer it over "entrypoints" and take a deprecated registration path
-// if it's present at all (see MarkedGoatsWailaPlugin.java) - so a single
-// static file can't serve both. Generated per-version instead of static,
-// same manifestOutputDir already wired as a resources srcDir by mod-platform.
+// Schema differs by WTHIT generation (legacy wants "initializer", modern
+// wants "entrypoints" and breaks if both are present) - generated per
+// version instead of static.
 val wailaPluginsJsonContent = if (project.hasProperty("deps.wthit-legacy-api")) {
 	"""{"markedgoats:plugin":{"initializer":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin","side":"client"}}"""
 } else {

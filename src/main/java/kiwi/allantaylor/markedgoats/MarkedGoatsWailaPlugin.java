@@ -225,13 +225,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static kiwi.allantaylor.markedgoats.util.GoatVariantUtil.getInstrumentNameFromGoat;
 
-// WTHIT's own PLUGIN API here is the old, pre-split generation - a single
-// IWailaPlugin.register(IRegistrar) instead of the modern
-// IWailaCommonPlugin/IWailaClientPlugin split. IEntityComponentProvider
-// itself (getIcon/appendHead/appendBody below) is byte-for-byte identical
-// between generations though, confirmed by decompiling both - only the
-// registration calls differ (registrar.addComponent/addIcon/addConfig here
-// vs the modern registrar.head/icon/localConfig shortcuts).
+// Old unified WTHIT API: one IWailaPlugin.register(IRegistrar) instead of
+// the split IWailaCommonPlugin/IWailaClientPlugin. Tooltip methods below
+// are the same as the modern branch, only registration differs.
 public class MarkedGoatsWailaPlugin implements IWailaPlugin, IEntityComponentProvider {
 
     public static final ResourceLocation SHOW_ICON = new ResourceLocation("marked_goats", "show_icon");
@@ -297,17 +293,10 @@ import org.jetbrains.annotations.NotNull;
 
 import static kiwi.allantaylor.markedgoats.util.GoatVariantUtil.getInstrumentNameFromGoat;
 
-// 1.18.2 predates goat horns entirely (added in 1.19's Wild Update):
-// Goat#createHorn() doesn't exist at all (confirmed via javap on the real
-// Goat.class), so there's no item to build an icon from - no SHOW_ICON
-// config, no addIcon call, no getIcon override (IEntityComponentProvider's
-// default already returns null, so WTHIT just never asks). Component's
-// static translatable()/literal() factories don't exist yet either
-// (confirmed - Component only has nullToEmpty(String) here), so text is
-// built via the direct TranslatableComponent/TextComponent constructors
-// instead. The instrument name is shown as a plain literal, not translated
-// - the vanilla instrument.minecraft.X_goat_horn key doesn't exist in
-// 1.18.2's lang files (no horn item registered to own it).
+// Pre-1.19: no goat horn item exists yet, so no icon (no SHOW_ICON,
+// no addIcon, no getIcon). Component has no static translatable()/
+// literal() factories yet either, so text uses the direct constructors,
+// and instrument name is a plain literal since no vanilla key exists.
 public class MarkedGoatsWailaPlugin implements IWailaPlugin, IEntityComponentProvider {
 
     public static final ResourceLocation SHOW_INSTRUMENT = new ResourceLocation("marked_goats", "show_instrument");

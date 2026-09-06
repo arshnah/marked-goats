@@ -64,11 +64,14 @@ sealed class Loader(val id: String) {
 				icon = "assets/icon.png",
 				license = ctx.licenseName,
 				accessWidener = "aw/${ctx.currentMcVersion}.accesswidener".takeIf { awFile.exists() },
-				entrypoints = mapOf(
+				entrypoints = buildMap {
 //					"main" to listOf("${ctx.modGroup}.${ctx.modId}.platform.fabric.FabricEntrypoint"),
 //					"client" to listOf("${ctx.modGroup}.${ctx.modId}.platform.fabric.FabricClientEntrypoint"),
 //					"fabric-datagen" to listOf("${ctx.modGroup}.${ctx.modId}.platform.fabric.datagen.FabricDataGeneratorEntrypoint")
-				),
+					if (ctx.project.hasProperty("deps.gametest")) {
+						put("fabric-gametest", listOf("${ctx.modGroup}.${ctx.modId}.test.GoatVariantGameTests"))
+					}
+				},
 				mixins = listOf("${ctx.modId}.mixins.json"),
 				depends = ctx.extension.dependencies.required.associate { it.modid.get() to it.fabricLikeVersionRange.get() },
 				recommends = ctx.extension.dependencies.optional.associate { it.modid.get() to it.fabricLikeVersionRange.get() },
