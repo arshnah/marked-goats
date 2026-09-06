@@ -97,6 +97,33 @@ dependencies {
 		val wthitApiVersion = if (project.hasProperty("deps.wthit-api")) prop("deps.wthit-api") else prop("deps.wthit")
 		modCompileOnly("mcp.mobius.waila:wthit-api:fabric-$wthitApiVersion")
 		modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${prop("deps.wthit")}")
-		modRuntimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
+		// BadPackets didn't exist yet for WTHIT releases old enough to still
+		// target 1.18/1.18.1 (its own first release postdates WTHIT's last
+		// 1.18.1 build by a month, confirmed via Modrinth) - optional here.
+		if (project.hasProperty("deps.badpackets")) {
+			modRuntimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
+		}
 	}
 }
+
+// waila_plugins.json's schema depends on which WTHIT generation this version
+// targets: the legacy PluginLoader only understands "initializer", modern
+// ones prefer it over "entrypoints" and take a deprecated registration path
+// if it's present at all (see MarkedGoatsWailaPlugin.java) - so a single
+// static file can't serve both. Generated per-version instead of static,
+// same manifestOutputDir already wired as a resources srcDir by mod-platform.
+val wailaPluginsJsonContent = if (project.hasProperty("deps.wthit-legacy-api")) {
+	"""{"markedgoats:plugin":{"initializer":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin","side":"client"}}"""
+} else {
+	"""{"markedgoats:plugin":{"entrypoints":{"common":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin","client":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin"},"side":"client"}}"""
+}
+val generateWailaPluginsJson = tasks.register("generateWailaPluginsJson") {
+	val outputFile = layout.buildDirectory.file("generated/modManifest/waila_plugins.json")
+	outputs.file(outputFile)
+	doLast {
+		val file = outputFile.get().asFile
+		file.parentFile.mkdirs()
+		file.writeText(wailaPluginsJsonContent)
+	}
+}
+tasks.named("processResources") { dependsOn(generateWailaPluginsJson) }

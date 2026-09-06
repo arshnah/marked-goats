@@ -79,8 +79,7 @@ exist yet, this branch reimplements it directly rather than skipping those versi
 
 ### WTHIT Plugin
 
-*Fabric only, available from 1.19 onward, with a few known gaps - see below. Not available on Forge or
-NeoForge at all yet - see below.*
+*Fabric only. Not available on Forge or NeoForge yet.*
 
 If you have [WTHIT](https://modrinth.com/project/6AQIaxuO) installed, Marked Goats provides an informative
 overlay when looking at a goat, so you don't even have to memorise the texture patterns.
@@ -90,8 +89,11 @@ overlay when looking at a goat, so you don't even have to memorise the texture p
 - **Instrument Icon** `show_icon`
   - Use a resource pack like [Goat Horns+ Remastered](https://modrinth.com/project/eI9qDeU7), otherwise they all
     look the same
+  - Not available on 1.18, 1.18.1, or 1.18.2 - there's no goat horn item yet at those versions
 - **Instrument Name** `show_instrument`
   - Ponder, Sing, Seek, all localised with the vanilla translations
+  - Shown as a plain label on 1.18, 1.18.1, and 1.18.2 instead, since there's no vanilla
+    translation for it yet
 - **Screaming Status** `show_is_screaming`
   - "Screaming Goat" to differentiate it from regular old "Goat"
   - Named screaming goats will show up as "Your Goat's Name (Screaming Goat)"
@@ -100,25 +102,7 @@ Each of these can be toggled in the WTHIT Plugin Settings.
 
 #### Known gaps
 
-- **Forge, NeoForge** - WTHIT integration hasn't been written for these loaders at all yet (no
-  `waila_plugins.json`-equivalent, no dependency wiring). This is a from-scratch feature, not a
-  version-boundary fix - not started.
-
-WTHIT integration is missing on a few Fabric versions where it can't currently be supported:
-
-- **1.18, 1.18.1** - WTHIT's own network-helper dependency
-  ([BadPackets](https://modrinth.com/mod/badpackets)) has no published release
-  this far back.
-- **1.18.2, 1.19.3, 1.19.4, 1.20.2, 1.20.5, 1.20.6** - the only WTHIT release
-  available for these specific patches uses an older, incompatible plugin API
-  (a single unified registrar rather than the split common/client one this
-  branch targets). Adding support means writing a second plugin
-  implementation against that older API, not just a version-boundary tweak -
-  not done yet.
-
-Every other supported version (1.19, 1.19.1, 1.19.2, 1.20.1/1.20.3/1.20.4,
-all of 1.21.x, and 26.x) has WTHIT wired and verified to compile against the
-correct API for that version.
+- **Forge, NeoForge** - not supported yet.
 
 ---
 

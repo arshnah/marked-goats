@@ -85,6 +85,28 @@ dependencies {
 		val wthitApiVersion = if (project.hasProperty("deps.wthit-api")) prop("deps.wthit-api") else prop("deps.wthit")
 		compileOnly("mcp.mobius.waila:wthit-api:fabric-$wthitApiVersion")
 		runtimeOnly("mcp.mobius.waila:wthit:fabric-${prop("deps.wthit")}")
-		runtimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
+		// See build.fabric-o.gradle.kts for why this is optional.
+		if (project.hasProperty("deps.badpackets")) {
+			runtimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
+		}
 	}
 }
+
+// See build.fabric-o.gradle.kts for why this is generated rather than static
+// - no version on this build script currently sets deps.wthit-legacy-api,
+// but kept consistent with fabric-o rather than special-cased away.
+val wailaPluginsJsonContent = if (project.hasProperty("deps.wthit-legacy-api")) {
+	"""{"markedgoats:plugin":{"initializer":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin","side":"client"}}"""
+} else {
+	"""{"markedgoats:plugin":{"entrypoints":{"common":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin","client":"kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin"},"side":"client"}}"""
+}
+val generateWailaPluginsJson = tasks.register("generateWailaPluginsJson") {
+	val outputFile = layout.buildDirectory.file("generated/modManifest/waila_plugins.json")
+	outputs.file(outputFile)
+	doLast {
+		val file = outputFile.get().asFile
+		file.parentFile.mkdirs()
+		file.writeText(wailaPluginsJsonContent)
+	}
+}
+tasks.named("processResources") { dependsOn(generateWailaPluginsJson) }

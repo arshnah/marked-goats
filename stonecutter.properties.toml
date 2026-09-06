@@ -41,21 +41,40 @@ deps.fabric-api = "0.46.6+1.18"
 deps.fabric-api-id = "fabric"
 deps.modmenu = "3.0.1"
 publish.additionalVersions = ["1.18"]
-# No WTHIT: badpackets has zero published versions this far back
-# (confirmed via narrow per-version Modrinth query, not just a bulk-query
-# absence - see SESSION-HANDOFF.md for the bulk-query reliability caveat).
+# BadPackets has zero published versions this far back (confirmed via
+# narrow per-version Modrinth query) - but that's not actually blocking:
+# wthit-fabric-4.5.5 (the last WTHIT release covering 1.18/1.18.1) was
+# published a month before BadPackets' own first-ever release, so it never
+# depends on it at all (confirmed via its real fabric.mod.json - only
+# fabricloader/fabric listed). Same old-API generation, pre-goat-horn API
+# surface, and fabric.mod.json-custom-value plugin discovery as 1.18.2 -
+# wired via the same wthit_plugin_legacy && <1.19 branch.
+deps.wthit-legacy-api = true
+deps.wthit-legacy-fabric-mod-json = true
+deps.wthit = "4.5.5"
 
 [fabric."1.18.2"]
 deps.minecraft = "1.18.2"
 deps.fabric-api = "0.77.0+1.18.2"
 deps.modmenu = "3.2.5"
-# No WTHIT: NOT the same reason as 1.18.1 above - badpackets (0.1.0-0.1.3)
-# and wthit (4.7.1-4.13.6) both actually exist for 1.18.2, unlike 1.18/1.18.1.
-# But the latest available, wthit-fabric-4.13.6, only ships the old unified
-# IWailaPlugin at runtime (confirmed by inspecting the jar directly - no
-# IWailaCommonPlugin/ICommonRegistrar/IClientRegistrar classes) - same
-# incompatible-generation gap as 1.19.3/1.19.4/1.20.2/1.20.5/1.20.6, not a
-# missing-dependency problem.
+# wthit-fabric-4.13.6 (the latest available for 1.18.2) only ships the old
+# unified IWailaPlugin at runtime, not the split common/client interfaces -
+# confirmed by inspecting the jar directly. 1.18.2 also predates goat horns
+# entirely (added in 1.19's Wild Update) - Goat#createHorn() doesn't exist
+# on this version's class at all, and Component.translatable isn't
+# available as a static factory here either (confirmed via javap on the
+# real mapped jar) - needed a separate wthit_plugin_legacy && <1.19 code
+# branch (no icon support, direct TranslatableComponent/TextComponent
+# construction) rather than reusing the >=1.19 legacy branch as-is.
+# Also, unlike every other legacy version, 4.13.6 doesn't read
+# waila_plugins.json at all - it reads a "waila:plugins" custom value
+# directly inside fabric.mod.json instead (confirmed via
+# FabricPluginLoader.java's gatherPlugins()), wired via
+# deps.wthit-legacy-fabric-mod-json in Loader.kt.
+deps.wthit-legacy-api = true
+deps.wthit-legacy-fabric-mod-json = true
+deps.wthit = "4.13.6"
+deps.badpackets = "0.1.3"
 
 [fabric."1.19.2"]
 deps.minecraft = "1.19.2"
@@ -70,21 +89,26 @@ publish.additionalVersions = ["1.19", "1.19.1"]
 deps.minecraft = "1.19.3"
 deps.fabric-api = "0.69.0+1.19.3"
 deps.modmenu = "5.1.0"
-# No WTHIT: wthit-fabric-6.7.1 (the only release for this patch) ships the
-# old unified IWailaPlugin API at runtime, not the split common/client one
-# this branch targets - confirmed by inspecting the mod jar directly
-# (no IWailaCommonPlugin/ICommonRegistrar classes present), not just the
-# compile-only wthit-api artifact. Wiring deps.wthit-api="5.36.1" as a
-# fallback lets it compile, but the plugin fails to instantiate at runtime
-# ("[WTHIT] Error creating instance of plugin markedgoats:plugin") - same
-# incompatible-generation gap as 1.20.2/1.20.5/1.20.6, not a version-range fix.
+# wthit-fabric-6.7.1 (the only release for this patch) ships the old unified
+# IWailaPlugin API at runtime, not the split common/client one - confirmed by
+# inspecting the mod jar directly. The earlier attempt to compile against a
+# newer wthit-api (5.36.1) as a fallback let it compile but crashed at
+# runtime ("[WTHIT] Error creating instance of plugin markedgoats:plugin").
+# Wired via the legacy plugin implementation (wthit_plugin_legacy) instead,
+# compiling against 6.7.1's own matching wthit-api.
+deps.wthit-legacy-api = true
+deps.wthit = "6.7.1"
+deps.badpackets = "0.3.6"
 
 [fabric."1.19.4"]
 deps.minecraft = "1.19.4"
 deps.fabric-api = "0.87.2+1.19.4"
 deps.modmenu = "6.3.1"
-# No WTHIT: same reason as 1.19.3 above - wthit-fabric-7.6.1 is also the old
+# Same reason as 1.19.3 above - wthit-fabric-7.6.1 is also the old
 # unified-API generation at runtime.
+deps.wthit-legacy-api = true
+deps.wthit = "7.6.1"
+deps.badpackets = "0.4.3"
 
 [fabric."1.20.1"]
 deps.minecraft = "1.20.1"
@@ -99,10 +123,13 @@ publish.additionalVersions = ["1.20"]
 deps.minecraft = "1.20.2"
 deps.fabric-api = "0.91.6+1.20.2"
 deps.modmenu = "8.0.0"
-# No WTHIT: fabric-9.x uses a different/older plugin API generation
-# (unified IWailaPlugin, no IWailaCommonPlugin/IWailaClientPlugin/
-# ICommonRegistrar split) that our MarkedGoatsWailaPlugin.java doesn't
-# target - confirmed across 9.10.0/9.10.2/9.10.3, not just this one patch.
+# fabric-9.x uses a different/older plugin API generation (unified
+# IWailaPlugin, no IWailaCommonPlugin/IWailaClientPlugin/ICommonRegistrar
+# split) - confirmed across 9.10.0/9.10.2/9.10.3. Wired via the legacy
+# plugin implementation (wthit_plugin_legacy) using the latest of that line.
+deps.wthit-legacy-api = true
+deps.wthit = "9.10.3"
+deps.badpackets = "0.5.7"
 
 [fabric."1.20.4"]
 deps.minecraft = "1.20.4"
@@ -119,9 +146,12 @@ deps.minecraft-range = ">=1.20.5 <1.20.7"
 deps.fabric-api = "0.100.8+1.20.6"
 deps.modmenu = "10.0.0"
 publish.additionalVersions = ["1.20.5"]
-# No WTHIT: fabric-11.4.3 (this block's release) confirmed to only have
-# the old unified IWailaPlugin interface, same incompatible generation as
-# the 9.x line - see the note in stonecutter.properties.toml for 1.20.2.
+# fabric-11.4.3 (this block's release) confirmed to only have the old
+# unified IWailaPlugin interface, same generation as the 9.x line above.
+# Wired via the legacy plugin implementation (wthit_plugin_legacy).
+deps.wthit-legacy-api = true
+deps.wthit = "11.4.3"
+deps.badpackets = "0.7.4"
 
 [fabric."1.21.1"]
 deps.minecraft = "1.21.1"

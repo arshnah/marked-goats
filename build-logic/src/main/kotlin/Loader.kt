@@ -40,15 +40,26 @@ sealed class Loader(val id: String) {
 				contact = mapOf(
 					"sources" to ctx.sourcesUrl, "issues" to ctx.issuesUrl, "homepage" to ctx.homepageUrl
 				),
-				custom = ctx.discordUrl.takeIf { it.isNotEmpty() }?.let { url ->
-					buildJsonObject {
+				custom = buildJsonObject {
+					ctx.discordUrl.takeIf { it.isNotEmpty() }?.let { url ->
 						putJsonObject("modmenu") {
 							putJsonObject("links") {
 								put("modmenu.discord", url)
 							}
 						}
 					}
-				},
+					// WTHIT 4.13.6 (1.18.2) predates the waila_plugins.json
+					// file-based discovery mechanism entirely - it reads a
+					// custom fabric.mod.json value instead (confirmed via
+					// FabricPluginLoader.java's gatherPlugins()).
+					if (ctx.project.hasProperty("deps.wthit-legacy-fabric-mod-json")) {
+						putJsonObject("waila:plugins") {
+							put("id", "${ctx.modId}:plugin")
+							put("initializer", "kiwi.allantaylor.markedgoats.MarkedGoatsWailaPlugin")
+							put("environment", "client")
+						}
+					}
+				}.takeIf { it.isNotEmpty() },
 				description = ctx.description,
 				icon = "assets/icon.png",
 				license = ctx.licenseName,

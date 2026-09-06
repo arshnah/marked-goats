@@ -41,6 +41,7 @@ stonecutter parameters {
 	swaps["minecraft"] = "\"${current.version}\";"
 	constants["release"] = properties.get<String>("mod.id") != "modtemplate"
 	constants["wthit_plugin"] = findProperty("$loader.$version.deps.wthit") != null
+	constants["wthit_plugin_legacy"] = findProperty("$loader.$version.deps.wthit-legacy-api") != null
 }
 
 for (version in stonecutter.versions.map { it.version }.distinct()) tasks.register("publish$version") {
