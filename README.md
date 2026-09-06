@@ -106,59 +106,13 @@ Each of these can be toggled in the WTHIT Plugin Settings.
 
 ---
 
-## Development
-
-This branch is built on [Stonecutter](https://stonecutter.kikugie.dev/), which lets one codebase target
-multiple Minecraft versions and loaders. Version/loader-specific code is written with Stonecutter comments:
-
-```java
-//? fabric {
-fabricOnlyCode();
-//?} else {
-/*neoforgeOnlyCode();*/
-//?}
-```
-
-```java
-//? 1.21.7 {
-LOGGER.info("hello 1.21.7!");
-//?} else {
-/*LOGGER.info("hello from any other version!");
- *///?}
-```
-
-For more, read the [Stonecutter documentation](https://stonecutter.kikugie.dev/wiki/).
-
-### Configuration
-
-Mod metadata and per-version/per-loader dependencies live in `stonecutter.properties.toml`
-(e.g. `[fabric."1.21.7"]`).
-
-### Access Wideners/Transformers
-
-* Fabric Access Wideners: `src/main/resources/aw/*.accesswidener` (one per supported Minecraft version)
-* (Neo)Forge Access Transformers: `src/main/resources/aw/*.cfg` (one per supported Minecraft version)
-
-### Running in Development
-
-The Gradle plugins of the respective platform provide run configurations. Be careful to run the correct task
-for the Stonecutter version/loader you're targeting, e.g.:
-
-```bash
-./gradlew :1.21.7-fabric:runClient
-```
-
-### Using the CI
-
-**`build.yml`** runs on every push and pull request - builds all versions and uploads the jars as artifacts.
-
-**`release.yml`** runs when a tag is pushed - validates the tag against `mod.version` + `mod.channel_tag`,
-builds all versions, generates a changelog via [`git-cliff`](https://git-cliff.org/), and publishes to whichever
-platforms are enabled via the repository's Actions secrets/variables.
-
 ## License/Credits
 
 MIT. Check `LICENSE` for details.
 
 * This branch rebuilds the mod on [rotgruengelb/stonecutter-mod-template](https://github.com/rotgruengelb/stonecutter-mod-template)
 * Uses [Stonecutter](https://stonecutter.kikugie.dev/) by KikuGie
+
+---
+
+Want to contribute a new version, a fix, or a resource pack? See [CONTRIBUTING.md](CONTRIBUTING.md).
