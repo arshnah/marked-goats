@@ -23,6 +23,7 @@ platform {
 			fabricLikeVersionRange = if (project.hasProperty("deps.minecraft-range")) prop("deps.minecraft-range") else prop("deps.minecraft")
 		}
 		required("fabric-api") {
+			if (project.hasProperty("deps.fabric-api-id")) modid.set(prop("deps.fabric-api-id"))
 			slug("fabric-api")
 			fabricLikeVersionRange = ">=${prop("deps.fabric-api")}"
 		}

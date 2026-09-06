@@ -20,7 +20,7 @@ letter on its back. The colours are based on
 ![Two rows of four Minecraft goats in roughly isometric view. Top row is white goats with red P, orange S, yellow S, and lime F letters on their backs. Bottom row is dark grey goats with green A, light blue C, blue Y, and purple D letters on their backs. Each goat has coloured bands on the horns that match the colour of the letter](https://cdn.modrinth.com/data/biTPC5IL/images/76b8f5732ae4ed29806103205cf0ebcb6bb55b01.png)
 
 Pre-1.20 versions have no goat horn item at all, so the texture is picked by replicating vanilla's own
-`Goat#createHorn` selection directly (a hash of the goat's UUID, gated on whether it's screaming) — it shows
+`Goat#createHorn` selection directly (a hash of the goat's UUID, gated on whether it's screaming) - it shows
 what the goat would actually drop once the world is loaded in 1.20+.
 
 ---
@@ -28,7 +28,7 @@ what the goat would actually drop once the world is loaded in 1.20+.
 ### Installation
 
 * Place the jar file in your `mods` folder.
-  * Pick the jar matching your loader and Minecraft version — see the versions listed in
+  * Pick the jar matching your loader and Minecraft version - see the versions listed in
     `stonecutter.properties.toml`.
 
 ---
@@ -79,7 +79,8 @@ exist yet, this branch reimplements it directly rather than skipping those versi
 
 ### WTHIT Plugin
 
-*Available on this branch for 1.19.2, 26.1.2, 26.2*
+*Fabric only, available from 1.19 onward, with a few known gaps - see below. Not available on Forge or
+NeoForge at all yet - see below.*
 
 If you have [WTHIT](https://modrinth.com/project/6AQIaxuO) installed, Marked Goats provides an informative
 overlay when looking at a goat, so you don't even have to memorise the texture patterns.
@@ -89,7 +90,6 @@ overlay when looking at a goat, so you don't even have to memorise the texture p
 - **Instrument Icon** `show_icon`
   - Use a resource pack like [Goat Horns+ Remastered](https://modrinth.com/project/eI9qDeU7), otherwise they all
     look the same
-  - Not available below 1.20 — there's no real horn item to show an icon for
 - **Instrument Name** `show_instrument`
   - Ponder, Sing, Seek, all localised with the vanilla translations
 - **Screaming Status** `show_is_screaming`
@@ -97,6 +97,28 @@ overlay when looking at a goat, so you don't even have to memorise the texture p
   - Named screaming goats will show up as "Your Goat's Name (Screaming Goat)"
 
 Each of these can be toggled in the WTHIT Plugin Settings.
+
+#### Known gaps
+
+- **Forge, NeoForge** - WTHIT integration hasn't been written for these loaders at all yet (no
+  `waila_plugins.json`-equivalent, no dependency wiring). This is a from-scratch feature, not a
+  version-boundary fix - not started.
+
+WTHIT integration is missing on a few Fabric versions where it can't currently be supported:
+
+- **1.18, 1.18.1** - WTHIT's own network-helper dependency
+  ([BadPackets](https://modrinth.com/mod/badpackets)) has no published release
+  this far back.
+- **1.18.2, 1.19.3, 1.19.4, 1.20.2, 1.20.5, 1.20.6** - the only WTHIT release
+  available for these specific patches uses an older, incompatible plugin API
+  (a single unified registrar rather than the split common/client one this
+  branch targets). Adding support means writing a second plugin
+  implementation against that older API, not just a version-boundary tweak -
+  not done yet.
+
+Every other supported version (1.19, 1.19.1, 1.19.2, 1.20.1/1.20.3/1.20.4,
+all of 1.21.x, and 26.x) has WTHIT wired and verified to compile against the
+correct API for that version.
 
 ---
 
@@ -144,9 +166,9 @@ for the Stonecutter version/loader you're targeting, e.g.:
 
 ### Using the CI
 
-**`build.yml`** runs on every push and pull request — builds all versions and uploads the jars as artifacts.
+**`build.yml`** runs on every push and pull request - builds all versions and uploads the jars as artifacts.
 
-**`release.yml`** runs when a tag is pushed — validates the tag against `mod.version` + `mod.channel_tag`,
+**`release.yml`** runs when a tag is pushed - validates the tag against `mod.version` + `mod.channel_tag`,
 builds all versions, generates a changelog via [`git-cliff`](https://git-cliff.org/), and publishes to whichever
 platforms are enabled via the repository's Actions secrets/variables.
 

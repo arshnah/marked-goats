@@ -47,7 +47,7 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
                 fullName = customName.copy().append(" (").append(fullName).append(")");
             }
 
-            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName));
+            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName.getString()));
         }
     }
 
@@ -117,7 +117,7 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
                 fullName = customName.copy().append(" (").append(fullName).append(")");
             }
 
-            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName));
+            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName.getString()));
         }
     }
 
@@ -149,6 +149,7 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
 *///?}
 //? if wthit_plugin && <1.21 {
 /*import mcp.mobius.waila.api.*;
+import mcp.mobius.waila.api.component.ItemComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.goat.Goat;
@@ -158,11 +159,13 @@ import static kiwi.allantaylor.markedgoats.util.GoatVariantUtil.getInstrumentNam
 
 public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientPlugin, IEntityComponentProvider {
 
+    public static final ResourceLocation SHOW_ICON = new ResourceLocation("marked_goats", "show_icon");
     public static final ResourceLocation SHOW_INSTRUMENT = new ResourceLocation("marked_goats", "show_instrument");
     public static final ResourceLocation SHOW_IS_SCREAMING = new ResourceLocation("marked_goats", "show_is_screaming");
 
     @Override
     public void register(ICommonRegistrar registrar) {
+        registrar.localConfig(SHOW_ICON, true);
         registrar.localConfig(SHOW_INSTRUMENT, true);
         registrar.localConfig(SHOW_IS_SCREAMING, true);
     }
@@ -171,6 +174,7 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
     public void register(IClientRegistrar registrar) {
         registrar.head(this, Goat.class);
         registrar.body(this, Goat.class);
+        registrar.icon(this, Goat.class);
     }
 
     @Override
@@ -184,7 +188,7 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
                 fullName = customName.copy().append(" (").append(fullName).append(")");
             }
 
-            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName));
+            tooltip.setLine(WailaConstants.OBJECT_NAME_TAG, formatter.entityName(fullName.getString()));
         }
     }
 
@@ -201,6 +205,12 @@ public class MarkedGoatsWailaPlugin implements IWailaCommonPlugin, IWailaClientP
 
     @Override
     public ITooltipComponent getIcon(IEntityAccessor accessor, @NotNull IPluginConfig config) {
+        if (!(accessor.getEntity() instanceof Goat entity)) {
+            return null;
+        }
+        if (config.getBoolean(SHOW_ICON)) {
+            return new ItemComponent(entity.createHorn());
+        }
         return null;
     }
 }
