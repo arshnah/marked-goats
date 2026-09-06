@@ -106,6 +106,21 @@ Each of these can be toggled in the WTHIT Plugin Settings.
 
 ---
 
+### Jade Plugin
+
+*Fabric only, 1.21.2+. Not available on Forge, NeoForge, or older Minecraft versions yet.*
+
+If you have [Jade](https://modrinth.com/project/nvQzSEkH) installed, Marked Goats provides the same overlay
+described above for WTHIT - instrument icon, instrument name, and screaming status, each toggleable in the
+Jade config screen.
+
+#### Known gaps
+
+- **Forge, NeoForge** - not supported yet.
+- **Below 1.21.2** - not wired up yet; see [CONTRIBUTING.md](CONTRIBUTING.md) if you'd like to add it.
+
+---
+
 ## License/Credits
 
 MIT. Check `LICENSE` for details.

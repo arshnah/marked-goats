@@ -90,6 +90,10 @@ dependencies {
 			runtimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
 		}
 	}
+	if (project.hasProperty("deps.jade")) {
+		compileOnly("maven.modrinth:jade:${prop("deps.jade")}")
+		runtimeOnly("maven.modrinth:jade:${prop("deps.jade")}")
+	}
 }
 
 // See build.fabric-o.gradle.kts for why this is generated rather than static

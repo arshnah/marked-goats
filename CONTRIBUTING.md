@@ -126,7 +126,35 @@ If no WTHIT release exists for the version at all, or the version predates
 BadPackets *and* the only WTHIT release available for it also requires
 BadPackets: leave WTHIT unwired and note the reason in the toml comment.
 
-### 3. fabric-api mod id
+### 3. Jade (optional)
+
+Only wired for `>=1.21.2` so far - not required for a new version, but if you
+want to extend it:
+
+1. Check whether Jade even publishes a release for this version:
+
+   ```
+   https://api.modrinth.com/v2/project/jade/version?game_versions=%5B%221.22.0%22%5D&loaders=%5B%22fabric%22%5D
+   ```
+
+2. Set `deps.jade` to that version's exact `version_number` (including the
+   `+fabric` suffix, e.g. `"19.3.2+fabric"`) - that's the real Modrinth Maven
+   coordinate under `maven.modrinth:jade:...`, already wired in
+   `build.fabric-o.gradle.kts`/`build.fabric-m.gradle.kts` and the `"jade"`
+   fabric.mod.json entrypoint in `Loader.kt`, both gated on this property.
+3. Jade's plugin API (`snownee.jade.api`) has been stable in shape across
+   every `>=1.21.2` release checked so far - only `ResourceLocation` vs
+   `Identifier` changes, and that's already handled by the same
+   `current.parsed >= "1.21.11"` string replacement used everywhere else in
+   this codebase. Don't assume this holds indefinitely - if a new version's
+   API differs, verify against the real tagged source
+   (`https://github.com/Snownee/Jade/tree/fabric-<version>/src/main/java/snownee/jade/api`)
+   rather than guessing from an older version or from `main`.
+4. `MarkedGoatsJadePlugin.java` is gated `jade_plugin && >=1.21.2` - no known
+   Jade support exists in this codebase below that yet (API shape differs
+   there and hasn't been checked).
+
+### 4. fabric-api mod id
 
 If the fabric-api version you're pinning is old enough it might still use
 the pre-rename `"fabric"` id instead of `"fabric-api"`. Check the jar's own
@@ -139,7 +167,7 @@ unzip -p fabric-api.jar fabric.mod.json | grep '"id"'
 If it says `"id": "fabric"` (no `"provides": ["fabric-api"]`), set
 `deps.fabric-api-id = "fabric"` in the toml block too.
 
-### 4. Verify - don't trust a clean compile
+### 5. Verify - don't trust a clean compile
 
 Compiling clean is not proof anything actually works. Every real bug found
 this project (a silent WTHIT registration failure, a raw-source caching
@@ -160,10 +188,14 @@ issue, a race between overlapping launches) still compiled fine.
    or `Error creating instance`. A clean launch with no error is not enough
    - WTHIT can silently fail to register a plugin and fall back to its own
    generic display, which looks identical to "working" at a glance.
-4. Look at an actual goat in-game and confirm the title, icon, and
+4. If Jade is wired, confirm `MarkedGoatsJadePlugin` actually loaded - Jade
+   logs registered plugins at startup, and the mod's tooltip lines/icon are
+   easy to confuse with Jade's own generic entity display if registration
+   silently failed.
+5. Look at an actual goat in-game and confirm the title, icon, and
    instrument name.
 
-### 5. Gametest (optional)
+### 6. Gametest (optional)
 
 Only wired for `1.21.7` so far - not required for a new version, but if you
 want to extend it:

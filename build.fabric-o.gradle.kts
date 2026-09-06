@@ -114,6 +114,10 @@ dependencies {
 			modRuntimeOnly("lol.bai:badpackets:fabric-${prop("deps.badpackets")}")
 		}
 	}
+	if (project.hasProperty("deps.jade")) {
+		modCompileOnly("maven.modrinth:jade:${prop("deps.jade")}")
+		modRuntimeOnly("maven.modrinth:jade:${prop("deps.jade")}")
+	}
 }
 
 // Schema differs by WTHIT generation (legacy wants "initializer", modern

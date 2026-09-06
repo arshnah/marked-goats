@@ -71,6 +71,9 @@ sealed class Loader(val id: String) {
 					if (ctx.project.hasProperty("deps.gametest")) {
 						put("fabric-gametest", listOf("${ctx.modGroup}.${ctx.modId}.test.GoatVariantGameTests"))
 					}
+					if (ctx.project.hasProperty("deps.jade")) {
+						put("jade", listOf("kiwi.allantaylor.markedgoats.MarkedGoatsJadePlugin"))
+					}
 				},
 				mixins = listOf("${ctx.modId}.mixins.json"),
 				depends = ctx.extension.dependencies.required.associate { it.modid.get() to it.fabricLikeVersionRange.get() },
